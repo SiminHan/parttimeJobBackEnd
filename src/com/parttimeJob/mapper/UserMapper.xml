@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.parttimeJob.mapper.UserMapper">
+
+	<select id="findUserById" parameterType="Long" resultType="user">
+		select  userID,username,password
+		from user
+		where userId=#{value}
+	</select>
+	
+	<select id="findUserByName" parameterType="String" resultType="user">
+		select userID,username,password
+		from user
+		where username=#{value}
+	</select>
+	
+	<insert id="insertUser" parameterType="user"  flushCache="true" >
+		insert into user(username,password)
+		values(#{username},#{password})
+	</insert>
+	
+	<select id="selectAllUsers" resultType="user">
+		select * from user
+	</select>
+	
+	<select id="getUserByUsername" parameterType="String" resultType="user">
+		select * from user where username = #{value}
+	</select>
+	
+	<select id="getUserById"  parameterType="Long"  resultType="userDetailVo">
+		select * from user where userId = #{value}
+	</select>
+
+	<update id="updateUserDetail" parameterType="userDetailVo" flushCache="true">
+		update user 
+		<set>
+			<if test="name !=null ">  
+	        	name=#{name, jdbcType=VARCHAR},
+	    	</if>  
+	    	<if test="password !=null ">  
+	        	password=#{password, jdbcType=VARCHAR},
+	    	</if>  
+	    	<if test="email !=null ">  
+	        	email=#{email, jdbcType=VARCHAR},
+	    	</if>  
+			<if test="headImage !=null ">  
+	        	headImage=#{headImage, jdbcType=VARCHAR},
+	    	</if>  
+			<if test="sex !=null ">  
+	        	sex=#{sex, jdbcType=BINARY},
+	    	</if>  
+			<if test="grade !=null ">  
+	        	grade=#{grade, jdbcType=VARCHAR},
+	    	</if>  
+			<if test="school !=null ">  
+	        	school=#{school, jdbcType=VARCHAR},
+	    	</if>  
+			<if test="colleague !=null ">  
+	        	colleague=#{colleague, jdbcType=VARCHAR},
+	    	</if>  
+			<if test="major !=null ">  
+	        	major=#{major, jdbcType=VARCHAR},
+	    	</if>  
+			<if test="phone !=null ">  
+	        	phone=#{phone, jdbcType=VARCHAR},
+	    	</if>  
+			<if test="introduce !=null ">  
+	        	introduce=#{introduce, jdbcType=VARCHAR},
+	    	</if>  
+			<if test="type !=null ">  
+	        	type=#{type, jdbcType=CHAR},
+	    	</if>  
+			<if test="status !=null ">  
+	        	status=#{status, jdbcType=CHAR},
+	    	</if>  
+			<if test="birthday !=null ">  
+	        	birthday=#{birthday, jdbcType=DATE},
+	    	</if>  
+	    </set>
+		where userId=#{userId}
+	</update>
+	
+	<select id="getParttimeJobSummaryList"  parameterType="pageOption"  resultType="parttimeJobSummaryVo">
+		select p.ptId,p.name,p.sarry,p.number,p.ptDate,p.ptTime,p.publishDate,p.applyNumber,p.statement,p.requirement,u.userId,u.username,u.headImage 
+		from parttimeJobInfo p,user u
+		where  p.userId = u.userId
+	</select>
+	
+	<select id="getParttimeJobDetail1" parameterType="long" resultType="parttimeJobInfoVo">
+		select ptId,name,sarry,number,ptDate,ptTime,publishDate,applyNumber,statement,requirement,userId,commends
+	</select>
+	
+	<sql id="queryFields">  
+      id , title , content , pub_time as pubTime , user_id as User  
+    </sql>  
+      
+    <resultMap type="parttimeJobInfoVo" id="parttimeJobInfoVoMap">  
+        <result property="ptId" column="ptId" />  
+        <result property="userId" column="userId" />  
+        <result property="name" column="name" />  
+        <result property="sarry" column="sarry" />  
+        <result property="number" column="number" />  
+        <result property="ptDate" column="ptDate" />  
+        <result property="ptTime" column="ptTime" />  
+        <result property="publishDate" column="publishDate" />  
+        <result property="applyNumber" column="applyNumber" />  
+        <result property="statement" column="statement" />  
+        <result property="requirement" column="requirement" /> 
+        <result property="deadline" column="deadline"/> 
+        <association property="user" javaType="userDetailVo" >  
+            <result property="userId" column="u_userId" />  
+            <result property="username" column="u_username" />  
+            <result property="name" column="u_name" />  
+            <result property="email" column="u_email" />  
+            <result property="sex" column="u_sex" />  
+            <result property="grade" column="u_grade" />  
+            <result property="school" column="u_school" />  
+            <result property="colleague" column="u_colleague" />  
+            <result property="major" column="u_major" />  
+            <result property="phone" column="u_phone" />  
+            <result property="introduce" column="u_introduce" />  
+             <result property="type" column="u_type" />  
+            <result property="status" column="u_status" />  
+            <result property="birthday" column="u_birthday" />  
+        </association>  
+        <collection property="commends" ofType="commendForParttimeJob"  >  
+            <result property="commendId" column="c_commendId" />  
+            <result property="commend" column="c_commend" />  
+            <result property="fromUserId" column="c_fromUserId" />  
+            <result property="ptId" column="c_ptId" />  
+            <result property="score" column="c_score" />  
+            <result property="isAnonymous" column="c_isAnonymous" />  
+            <result property="commendDate" column="c_commendDate" /> 
+        </collection>  
+    </resultMap>  
+      
+    <select id="getParttimeJobDetail" parameterType="Long" resultMap="parttimeJobInfoVoMap">  
+        select  
+        p.ptId,
+        p.userId,
+        p.name,
+        p.ptDate,
+        p.ptTime,
+        p.sarry,
+        p.number,
+        p.applyNumber,
+        p.publishDate,
+        p.statement,
+        p.deadline,
+        u.userId as u_userId,
+        u.username as u_username,
+        u.name as u_name,
+        u.email as u_email,
+        u.headImage as u_headImage,
+        u.sex as u_sex,
+        u.grade as u_grade,
+        u.school as u_school,
+        u.colleague as u_colleague,
+        u.major as u_major,
+        u.phone as u_phone,
+        u.introduce as u_introduce,
+        u.type as u_type,
+        u.status as u_status,
+        u.birthday as u_birthday,
+        c.commendId as c_commendId,
+        c.commend as c_commend,
+        c.fromUserId as c_fromUserId,
+        c.ptId as c_ptId,
+        c.isAnonymous as c_isAnonymous,
+        c.commendDate as c_commendDate,
+        c.score as c_score
+        from 
+        parttimeJobInfo p
+        left outer join user u on p.userId = u.userId 
+        left outer join commendForParttimeJob c on p.ptId = c.ptId  
+        where p.ptId = #{value}  
+     </select>
+     
+     <insert id="sendMessageToUser" parameterType="infomationVo"  flushCache="true">
+     		insert into infomation(
+     		fromUserId,
+     		toUserId,
+     		title,
+     		infomation)
+		    values(
+		    #{fromUserId},
+		    #{toUserId},
+		    #{title},
+		    #{infomation})
+     </insert>
+     
+     <resultMap type="discoverySummaryVo" id="discoverySummaryVoMap">  
+        <result property="discoveryId" column="d_discoveryId" />  
+        <result property="userId" column="d_userId" />  
+        <result property="countGood" column="d_countGood" />  
+        <result property="discoveryName" column="d_name" />  
+        <result property="summary" column="d_summary" />  
+        <result property="publishTime" column="d_publishTime" />  
+        <result property="username" column="u_username" />  
+        <result property="name" column="u_name" />  
+        <result property="school" column="u_school" />  
+        <result property="grade" column="u_grade" />  
+        <result property="major" column="u_major" />  
+        <result property="colleague" column="u_colleague" />  
+        <result property="headImage" column="u_headImage" />  
+        <result property="type" column="u_type" />  
+        <result property="sex" column="u_sex" />  
+    </resultMap>  
+     
+     <select id="getDiscoverySummary" resultMap="discoverySummaryVoMap">  
+        select  
+        d.discoveryId as d_discoveryId,
+        d.userId as d_userId,
+        d.countGood as d_countGood,
+        d.name as d_name,
+        d.summary as d_summary,
+        d.publishTime as d_publishTime,
+        u.username as u_username,
+        u.name as u_name,
+        u.headImage as u_headImage,
+        u.sex as u_sex,
+        u.grade as u_grade,
+        u.school as u_school,
+        u.colleague as u_colleague,
+        u.major as u_major,
+        u.type as u_type
+        from 
+        discovery d
+        left outer join user u on d.userId = u.userId 
+     </select>
+     
+     <resultMap type="discoveryDetailVo" id="discoveryDetailMap">  
+        <result property="discoveryId" column="discoveryId" />  
+        <result property="userId" column="userId" />  
+        <result property="countGood" column="countGood" />  
+        <result property="name" column="name" />  
+        <result property="summary" column="summary" />  
+        <result property="detail" column="detail" />  
+        <result property="publishTime" column="publishTime" />  
+        <association property="user" javaType="userDetailVo" >  
+            <result property="userId" column="u_userId" />  
+            <result property="username" column="u_username" />  
+            <result property="name" column="u_name" />  
+            <result property="email" column="u_email" />  
+            <result property="sex" column="u_sex" />  
+            <result property="grade" column="u_grade" />  
+            <result property="school" column="u_school" />  
+            <result property="colleague" column="u_colleague" />  
+            <result property="major" column="u_major" />  
+            <result property="phone" column="u_phone" />  
+            <result property="introduce" column="u_introduce" />  
+             <result property="type" column="u_type" />  
+            <result property="status" column="u_status" />  
+            <result property="birthday" column="u_birthday" />  
+        </association>  
+        <collection property="commends" ofType="commendForDiscovery"  >  
+            <result property="commendId" column="c_commendId" />  
+            <result property="commend" column="c_commend" />  
+            <result property="fromUserId" column="c_fromUserId" />  
+            <result property="discoveryId" column="c_discoveryId" />  
+            <result property="score" column="c_score" />  
+            <result property="isAnonymous" column="c_isAnonymous" />  
+            <result property="commendDate" column="c_commendDate" /> 
+        </collection>  
+    </resultMap>  
+     
+     
+     <select id="getDiscoveryDetail" parameterType="Long" resultMap="discoveryDetailMap">  
+        select  
+        d.discoveryId,
+        d.userId,
+        d.countGood,
+        d.name,
+        d.summary,
+        d.detail,
+        d.publishTime,
+        u.userId as u_userId,
+        u.username as u_username,
+        u.name as u_name,
+        u.email as u_email,
+        u.headImage as u_headImage,
+        u.sex as u_sex,
+        u.grade as u_grade,
+        u.school as u_school,
+        u.colleague as u_colleague,
+        u.major as u_major,
+        u.phone as u_phone,
+        u.introduce as u_introduce,
+        u.type as u_type,
+        u.status as u_status,
+        u.birthday as u_birthday,
+        c.commendId as c_commendId,
+        c.commend as c_commend,
+        c.fromUserId as c_fromUserId,
+        c.discoveryId as c_discoveryId,
+        c.isAnonymous as c_isAnonymous,
+        c.commendDate as c_commendDate,
+        c.score as c_score
+        from
+        discovery d
+        left outer join user u on d.userId = u.userId 
+        left outer join commendForDiscovery c on d.discoveryId = c.discoveryId  
+        where d.discoveryId = #{value}  
+     </select>
+
+</mapper>

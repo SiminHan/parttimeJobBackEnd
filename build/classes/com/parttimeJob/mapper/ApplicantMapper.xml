@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.parttimeJob.mapper.ApplicantMapper">
+
+	<insert id="apply" parameterType="applyParttimeJobVo"  flushCache="true" >
+		insert into applyParttimeJob(
+		userId,
+		ptId,
+		note)
+		values(
+		#{userId},
+		#{ptId},
+		#{note})
+	</insert>
+	
+	<insert id="publishDiscovery" parameterType="discoveryDetailVo"  flushCache="true" >
+		insert into discovery(
+		userId,
+		name,
+		summary,
+		detail)
+		values(
+		#{userId},
+		#{name},
+		#{summary},
+		#{detail})
+	</insert>
+	
+	<resultMap type="infomationVo" id="infomationVoMap">  
+        <result property="infoId" column="i_infoId" />  
+        <result property="fromUserId" column="i_fromUserId" />  
+        <result property="toUserId" column="i_toUserId" />  
+        <result property="title" column="i_title" />  
+        <result property="infomation" column="i_infomation" />  
+        <result property="isRead" column="i_isRead" />  
+        <result property="infoTime" column="i_infoTime" />  
+        <association property="fromUser" javaType="userDetailVo" >  
+            <result property="userId" column="u_from_id" />  
+            <result property="username" column="u_from_username" />  
+            <result property="name" column="u_from_name" /> 
+            <result property="headImage" column="u_from_headImage" />  
+            <result property="type" column="u_from_type" />  
+            <result property="sex" column="u_from_sex" />  
+        </association>  
+        <association property="toUser" javaType="userDetailVo" >  
+            <result property="userId" column="u_to_id" />  
+            <result property="username" column="u_to_username" />  
+            <result property="name" column="u_to_name" /> 
+            <result property="headImage" column="u_to_headImage" />  
+            <result property="type" column="u_to_type" />  
+            <result property="sex" column="u_to_sex" />  
+        </association>  
+        
+    </resultMap>  
+	
+	<select id="viewInfomation" parameterType="Long"  resultMap="infomationVoMap">
+	select 
+	i.infoId as i_infoId,
+	i.fromUserId as i_fromUserId,
+	i.toUserId as i_toUserId,
+	i.title as i_title,
+	i.infomation as i_infomation,
+	i.isRead as i_isRead,
+	i.infoTime as i_infoTime,
+	u_from.userId as u_from_id,
+	u_from.username as u_from_username,
+	u_from.name as u_from_name,
+	u_from.headImage as u_from_headImage,
+	u_from.type as u_from_type,
+	u_from.sex as u_from_sex,
+	u_to.userId as u_to_id,
+	u_to.username as u_to_username,
+	u_to.name as u_to_name,
+	u_to.headImage as u_to_headImage,
+	u_to.type as u_to_type,
+	u_to.sex as u_to_sex
+	from infomation i 
+	left outer join user u_from on i.toUserId = u_from.userId 
+	left outer join user u_to on i.toUserId = u_to.userId
+	 where i.toUserId = #{value}
+	</select>
+	
+	<select id="viewApplyJobs"  parameterType="Long"  resultType="parttimeJobSummaryVo">
+		select p.ptId,p.name,p.sarry,p.number,p.ptDate,p.ptTime,p.publishDate,p.applyNumber,p.statement,p.requirement,u.userId,u.username,u.headImage 
+		from parttimeJobInfo p,user u
+		where  p.userId = u.userId and p.userId = #{value}
+	</select>
+	
+	<insert id="commendForParttimeJob" parameterType="commendForParttimeJobVo"  flushCache="true" >
+		insert into commendForParttimeJob(
+		fromUserId,
+		ptId,
+		commend,
+		score,
+		isAnonymous)
+		values(
+		#{fromUserId},
+		#{ptId},
+		#{commend},
+		#{score},
+		#{isAnonymous})
+	</insert>
+
+</mapper>

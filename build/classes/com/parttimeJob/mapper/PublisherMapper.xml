@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.parttimeJob.mapper.PublisherMapper">
+
+	<insert id="publish" parameterType="parttimeJobInfoVo"  flushCache="true" >
+		insert into parttimeJobInfo(
+		userId,
+		name,
+		ptDate,
+		ptTime,
+		sarry,
+		number,
+		statement,
+		requirement)
+		values(
+		#{userId},
+		#{name,jdbcType=VARCHAR},
+		#{ptDate,jdbcType=VARCHAR},
+		#{ptTime,jdbcType=VARCHAR},
+		#{sarry,jdbcType=NUMERIC},
+		#{number,jdbcType=NUMERIC},
+		#{statement,jdbcType=VARCHAR},
+		#{requirement,jdbcType=VARCHAR})
+	</insert>
+	
+	<resultMap type="applicantsSummaryVo" id="viewApplicantsSummaryMap">  
+	    <id property="applyId" column="a_applyId" /> 
+        <association property="apply" javaType="applyParttimeJobVo" >
+			<id property="applyId" column="a_applyId" />  
+            <result property="userId" column="a_userId" />  
+            <result property="ptId" column="a_ptId" />  
+            <result property="applyTime" column="a_applyTime" />  
+            <result property="note" column="a_note" />  
+            <result property="applyStatus" column="a_applyStatus" />  
+		</association> 
+        <association property="user" javaType="userDetailVo" >  
+            <id property="userId" column="u_userId" />  
+            <result property="username" column="u_username" />  
+            <result property="name" column="u_name" />  
+            <result property="email" column="u_email" />  
+            <result property="sex" column="u_sex" />  
+            <result property="grade" column="u_grade" />  
+            <result property="school" column="u_school" />  
+            <result property="colleague" column="u_colleague" />  
+            <result property="major" column="u_major" />  
+            <result property="phone" column="u_phone" />  
+            <result property="introduce" column="u_introduce" />  
+             <result property="type" column="u_type" />  
+            <result property="status" column="u_status" />  
+            <result property="birthday" column="u_birthday" />  
+        </association>  
+    </resultMap>  
+
+	<select id="viewApplicantsSummary" parameterType="Map" resultMap="viewApplicantsSummaryMap">
+	select  
+        u.userId as u_userId,
+        u.username as u_username,
+        u.name as u_name,
+        u.email as u_email,
+        u.headImage as u_headImage,
+        u.sex as u_sex,
+        u.grade as u_grade,
+        u.school as u_school,
+        u.colleague as u_colleague,
+        u.major as u_major,
+        u.phone as u_phone,
+        u.introduce as u_introduce,
+        u.type as u_type,
+        u.status as u_status,
+        u.birthday as u_birthday,
+        a.applyId as a_applyId,
+        a.userId as a_userId,
+        a.ptId as a_ptId,
+        a.note as a_note,
+        a.applyStatus as a_applyStatus,
+        a.applyTime as a_applyTime
+        from 
+        applyParttimeJob a left outer join user u on a.userId = u.userId  
+        where a.ptId = #{ptId}  
+	</select>
+	
+	<insert id="sendMessageToUsers1" parameterType="infomationVo">
+	insert into 
+	</insert>
+	
+	<insert id="sendMessageToUsers" useGeneratedKeys="true" parameterType="java.util.List">  
+	    insert into infomation (
+	    infoId,
+	    fromUserId,
+	    toUserId,
+	    title,
+	    infomation)   
+	    values  
+	    <foreach collection="list" item="item" index="index" separator="," >  
+	        (#{item.infoId},
+	        #{item.fromUserId},
+	        #{item.toUserId},
+	        #{item.title},
+	        #{item.infomation})  
+	    </foreach>  
+	</insert>  
+
+</mapper>
